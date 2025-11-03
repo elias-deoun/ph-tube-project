@@ -1,3 +1,11 @@
+const removeActiveClass = () => {
+  const activeBtn = document.getElementsByClassName('active')
+  for (const btn of activeBtn) {
+    btn.classList.remove('active')
+
+  }
+}
+
 function loadCategories() {
   // fetch the data
   fetch('https://openapi.programming-hero.com/api/phero-tube/categories')
@@ -9,7 +17,54 @@ function loadCategories() {
 function loadVideos() {
   fetch('https://openapi.programming-hero.com/api/phero-tube/videos')
     .then((response) => response.json())
-    .then((data) => displayVideos(data.videos))
+    .then((data) => {
+      const allBtn = document.getElementById('btn-all');
+      allBtn.classList.add('active');
+      displayVideos(data.videos)
+    })
+
+}
+const loadCategoryVideos = (id) => {
+  const url = `https://openapi.programming-hero.com/api/phero-tube/category/${id}`;
+
+  fetch(url)
+    .then(res => res.json()).then(data => {
+      removeActiveClass()
+      const clickBtn = document.getElementById(`btn-${id}`)
+      clickBtn.classList.add('active')
+      console.log(clickBtn)
+      displayVideos(data.category)
+    })
+
+}
+const loadVideoDetails = (videoId) => {
+  const url = `https://openapi.programming-hero.com/api/phero-tube/video/${videoId}`;
+  fetch(url)
+    .then(res => res.json())
+    .then(data => displayVideoDetails(data.video));
+  // console.log(videoId)
+}
+const displayVideoDetails = (video) => { 
+console.log(video)
+document.getElementById('video_details').showModal();
+const detailsContainer=document.getElementById('details_container');
+detailsContainer.innerHTML=`
+ <div class="max-h-56 bg-base-100">
+  <figure>
+    <img class="mx-auto"
+      src="${video.thumbnail}"
+      alt="Shoes" />
+  </figure>
+  <div>
+    <h2 class="card-title">${video.title}</h2>
+    <p>A card component has a figure, a body part, and inside body there are title and actions parts</p>
+    <div class="card-actions justify-end">
+    </div>
+  </div>
+</div>
+
+`
+
 }
 function displayCategories(categories) {
   // get the container
@@ -18,7 +73,7 @@ function displayCategories(categories) {
   for (const cat of categories) {
     const categoryDiv = document.createElement('div')
     categoryDiv.innerHTML = `
-    <button class="btn btn-sm bg-[#25252520] hover:bg-[#FF1F3D]">${cat.category}</button>
+    <button id="btn-${cat.category_id}" onclick="loadCategoryVideos(${cat.category_id})" class="btn btn-sm bg-[#25252520] hover:bg-[#FF1F3D]">${cat.category}</button>
     `;
     // append child
     categoriesContainer.append(categoryDiv)
@@ -26,10 +81,21 @@ function displayCategories(categories) {
 }
 const displayVideos = (videos) => {
   const videoContainer = document.getElementById('video-container');
+  videoContainer.innerHTML = '';
+  if (videos.length === 0) {
+    videoContainer.innerHTML = `
+    <div class="flex justify-center items-center py-20 col-span-4 flex-col">
+      <img class="w-[8rem]" src="assets/Icon.png" alt="">
+      <h1 class="text-2xl font-bold">!!oops,There is no content.</h1>
+     </div>
+    `;
+    return;
 
-  videos.forEach(video => { 
-    const videoCard=document.createElement('div')
-    videoCard.innerHTML=`
+  }
+
+  videos.forEach(video => {
+    const videoCard = document.createElement('div')
+    videoCard.innerHTML = `
     <div class="card bg-base-100 mt-5">
   <figure class="relative">
     <img class="w-full h-[150px] object-cover"
@@ -52,13 +118,25 @@ const displayVideos = (videos) => {
 
     </div>
   </div>
+  <button onclick=loadVideoDetails("${video.video_id}") class="btn btn-wide">Show Details</button>
 </div>
     `;
     videoContainer.append(videoCard)
   })
 }
 loadCategories()
-loadVideos()
+// function toggleButtonColor() {
+//   const btn = document.getElementById('btn-all');
+//   // Toggle background color
+//   if (btn.classList.contains('bg-[#FF1F3D]')) {
+//     btn.classList.remove('bg-[#FF1F3D]');
+//     btn.classList.add('bg-green-500');
+//   } else {
+//     btn.classList.remove('bg-green-500');
+//     btn.classList.add('bg-[#FF1F3D]');
+//   }
+// }
+// loadVideos()
 // // {
 //     "category_id": "1001",
 //     "video_id": "aaal",

@@ -6,6 +6,12 @@
   <title>PH-tube</title>
   <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
 <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<style>
+  .active{
+    background-color: red;
+    color:white;
+  }
+</style>
 </head>
 <body>
   <header>
@@ -24,14 +30,29 @@
   </header>
   <div id="container" class="flex justify-center gap-5 mt-3">
     <div>
-      <button class="btn btn-sm bg-[#FF1F3D] text-white">All</button>
+      <button onclick="loadVideos()" id="btn-all" class="btn btn-sm text-emerald-800 transition">All</button>
     </div>
 
 
   </div>
   <section id="video-container" class="w-11/12 mx-auto grid grid-cols-4 gap-3">
-
+     <div class="flex justify-center items-center py-20 col-span-4 flex-col">
+      <img class="w-[8rem]" src="assets/Icon.png" alt="">
+      <h1 class="text-2xl font-bold">!!oops,There is no content.</h1>
+     </div>
   </section>
+  <!-- Open the modal using ID.showModal() method -->
+<!-- <button class="btn" onclick="my_modal_2.showModal()">open modal</button> -->
+<dialog id="video_details" class="modal">
+  <div class="modal-box">
+  <div id="details_container">
+
+  </div>
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button>close</button>
+  </form>
+</dialog>
   <script src="js/index.js"></script>
 </body>
 </html>
