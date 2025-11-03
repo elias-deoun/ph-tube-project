@@ -1,3 +1,12 @@
+const showLoader = () => { 
+  document.getElementById('loader').classList.remove('hidden')
+  document.getElementById('video-container').classList.add('hidden')
+}
+const hiddenLoader = () => { 
+  document.getElementById('loader').classList.add('hidden')
+  document.getElementById('video-container').classList.remove('hidden')
+}
+
 const removeActiveClass = () => {
   const activeBtn = document.getElementsByClassName('active')
   for (const btn of activeBtn) {
@@ -14,8 +23,9 @@ function loadCategories() {
     // send data to display
     .then((data) => displayCategories(data.categories))
 }
-function loadVideos() {
-  fetch('https://openapi.programming-hero.com/api/phero-tube/videos')
+function loadVideos(searchText = '') {
+  showLoader()
+  fetch(`https://openapi.programming-hero.com/api/phero-tube/videos?title=${searchText}`)
     .then((response) => response.json())
     .then((data) => {
       const allBtn = document.getElementById('btn-all');
@@ -25,6 +35,7 @@ function loadVideos() {
 
 }
 const loadCategoryVideos = (id) => {
+  showLoader()
   const url = `https://openapi.programming-hero.com/api/phero-tube/category/${id}`;
 
   fetch(url)
@@ -44,22 +55,21 @@ const loadVideoDetails = (videoId) => {
     .then(data => displayVideoDetails(data.video));
   // console.log(videoId)
 }
-const displayVideoDetails = (video) => { 
-console.log(video)
-document.getElementById('video_details').showModal();
-const detailsContainer=document.getElementById('details_container');
-detailsContainer.innerHTML=`
- <div class="max-h-56 bg-base-100">
+const displayVideoDetails = (video) => {
+  console.log(video)
+  document.getElementById('video_details').showModal();
+  const detailsContainer = document.getElementById('details_container');
+  detailsContainer.innerHTML = `
+ <div class="card bg-base-100 image-full shadow-sm">
   <figure>
-    <img class="mx-auto"
+    <img
       src="${video.thumbnail}"
       alt="Shoes" />
   </figure>
-  <div>
+  <div class="card-body flex justify-center items-center flex-col">
     <h2 class="card-title">${video.title}</h2>
     <p>A card component has a figure, a body part, and inside body there are title and actions parts</p>
-    <div class="card-actions justify-end">
-    </div>
+  
   </div>
 </div>
 
@@ -89,6 +99,7 @@ const displayVideos = (videos) => {
       <h1 class="text-2xl font-bold">!!oops,There is no content.</h1>
      </div>
     `;
+    hiddenLoader()
     return;
 
   }
@@ -113,7 +124,9 @@ const displayVideos = (videos) => {
     </div>
     <div class="intro">
       <h2 class="font-semibold text-sm">${video.title}</h2>
-      <p class="text-sm text-gray-400 flex gap-1"> ${video.authors[0].profile_name} <img class="w-5 h-5" src="https://img.icons8.com/?size=48&id=98A4yZTt9abw&format=png" alt=""></p>
+      <p class="text-sm text-gray-400 flex gap-1"> ${video.authors[0].profile_name}
+      ${video.authors[0].verified === true ? `<img class="w-5 h-5" src="https://img.icons8.com/?size=48&id=98A4yZTt9abw&format=png" alt="">` : ``}
+      </p>
       <h2 class="text-sm text-gray-400">${video.others.views}</h2>
 
     </div>
@@ -123,7 +136,13 @@ const displayVideos = (videos) => {
     `;
     videoContainer.append(videoCard)
   })
+  hiddenLoader()
 }
+const searchVideos = document.getElementById('searchInput')
+searchVideos.addEventListener('keyup', (e) => {
+  const input = e.target.value;
+  loadVideos(input)
+})
 loadCategories()
 // function toggleButtonColor() {
 //   const btn = document.getElementById('btn-all');
